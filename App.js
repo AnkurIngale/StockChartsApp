@@ -34,7 +34,7 @@ class StockFetch extends Component {
           <Text>Data gathering Successful.</Text>
           <View>
             <Histogram 
-              xLabels={this.state.data.map((item) => item.date)}
+              xLabels={this.state.data.map((item) => item.date.substr(0, 10))}
               yValues={this.state.data.map((item) => item.open)}
               width='400'
               height='200'
