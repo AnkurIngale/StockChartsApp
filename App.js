@@ -1,64 +1,48 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
-import { StyleSheet, Text, TextInput, View, ActivityIndicator } from 'react-native';
-import { LineChart } from 'react-native-chart-kit';
-import { Avatar } from 'react-native-elements';
+import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
+import Histogram from 'react-chart-histogram';
 
 class StockFetch extends Component {
 
   state = {};
   constructor(props){
     super(props);
-    this.state = {ticker : props.ticker, isLoading : true};
+    this.state = {isLoading : true};
   }
 
   componentDidMount(){
-    const apiStockURL = "https://api.tiingo.com/tiingo/daily/" + this.state.ticker + "/prices?startDate=2012-1-1&endDate=2016-1-1&&token=bc636b840068de7cefebde50762aa45fb89c7743";
+    const apiStockURL = "https://api.tiingo.com/tiingo/daily/" + this.props.ticker + "/prices?startDate=2012-1-1&endDate=2013-1-1&&token=bc636b840068de7cefebde50762aa45fb89c7743";
 
     fetch(apiStockURL)
     .then((response) => response.json())
     .then((data) => {
-      this.setState({stockdata : data, isLoading : false});
+      this.setState({data, isLoading : false});
       console.log(data);
     })
     .catch((error) => console.log(error));
   }
 
   render() {
-    const stockdata = this.state.stockdata;
+    const label = ['1','2','3','4'];
+    const data = [100,90,120,300];
+    console.log(label + data)
+    const options = { fillColor: '#FFFFFF', strokeColor: '#0000FF' };
     return (
-      <>
-      {
         (this.state.isLoading) ? <ActivityIndicator/> : (
-          <>
+          <div>
           <Text>Data gathering Successful.</Text>
-          {
-          /* <LineChart
-            data={stockdata}
-            width={500} // from react-native
-            height={220}
-            yAxisLabel={'$'}
-            chartConfig={{
-              backgroundColor: '#e26a00',
-              backgroundGradientFrom: '#fb8c00',
-              backgroundGradientTo: '#ffa726',
-              decimalPlaces: 2, // optional, defaults to 2dp
-              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              style: {
-                borderRadius: 16
-              }
-            }}
-            bezier
-            style={{
-              marginVertical: 8,
-              borderRadius: 16
-            }}
-          /> */
-          }
-          </>
+          <View>
+            <Histogram 
+              xLabels={this.state.data.map((item) => item.date)}
+              yValues={this.state.data.map((item) => item.open)}
+              width='400'
+              height='200'
+              options={options}
+            />
+          </View>
+          </div>
         )
-      }
-      </>
     );
   }
 }

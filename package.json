@@ -11,6 +11,7 @@
     "expo": "~39.0.2",
     "expo-status-bar": "~1.0.2",
     "react": "16.13.1",
+    "react-chart-histogram": "^0.2.4",
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-39.0.2.tar.gz",
     "react-native-chart-kit": "^6.6.1",
