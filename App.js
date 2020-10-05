@@ -13,29 +13,33 @@ class StockFetch extends Component {
   }
 
   componentDidUpdate(prevProps){
-    const apiStockURL = "https://api.tiingo.com/tiingo/daily/" + this.props.ticker + "/prices?startDate=" + this.props.startDate 
-    + "&endDate=" + this.props.endDate + "&&token=bc636b840068de7cefebde50762aa45fb89c7743";
+    if(this.props.isSubmitted){
+      const apiStockURL = "https://api.tiingo.com/tiingo/daily/" + this.props.ticker + "/prices?startDate=" + this.props.startDate 
+      + "&endDate=" + this.props.endDate + "&&token=bc636b840068de7cefebde50762aa45fb89c7743";
 
-    fetch(apiStockURL)
-    .then((response) => response.json())
-    .then((data) => {
-      this.setState({data, isLoading : false});
-      console.log(data);
-    })
-    .catch((error) => console.log(error));
+      fetch(apiStockURL)
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({data, isLoading : false});
+        console.log(data);
+      })
+      .catch((error) => console.log(error));
+    }
   }
 
   componentDidMount(){
-    const apiStockURL = "https://api.tiingo.com/tiingo/daily/" + this.props.ticker + "/prices?startDate=" + this.props.startDate 
-    + "&endDate=" + this.props.endDate + "&&token=bc636b840068de7cefebde50762aa45fb89c7743";
+    if(this.props.isSubmitted){
+      const apiStockURL = "https://api.tiingo.com/tiingo/daily/" + this.props.ticker + "/prices?startDate=" + this.props.startDate 
+      + "&endDate=" + this.props.endDate + "&&token=bc636b840068de7cefebde50762aa45fb89c7743";
 
-    fetch(apiStockURL)
-    .then((response) => response.json())
-    .then((data) => {
-      this.setState({data, isLoading : false});
-      console.log(data);
-    })
-    .catch((error) => console.log(error));
+      fetch(apiStockURL)
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({data, isLoading : false});
+        console.log(data);
+      })
+      .catch((error) => console.log(error));
+    }
   }
 
   render() {
@@ -65,10 +69,12 @@ class StockFetch extends Component {
 class StockForm extends React.Component {
   constructor(props) {
     super(props);
+    this.timer = null;
     this.state = {
       stockName: 'AAPL',
       startDate: '2012-1-1',
-      endDate: '2013-1-1'
+      endDate: '2013-1-1',
+      isSubmitted: false
     };
   }
 
@@ -80,6 +86,18 @@ class StockForm extends React.Component {
     let nam = event.target.name;
     let val = event.target.value;
     this.setState({[nam]: val});
+  }
+
+  submitForm = (event) => {
+    this.setState({isSubmitted: true});
+    this.timer = setTimeout(() => {
+      console.log('Submitted');
+      this.setState({isSubmitted: false});
+    }, 500);
+  }
+
+  componentWillUnmount(){
+    clearTimeout(this.timer);
   }
 
   render() {
@@ -108,11 +126,12 @@ class StockForm extends React.Component {
         />
         <br/>
         <br/>
-        <input type='submit' />
+        <input type='submit' onClick={this.submitForm}/>
         </form>
       </div>
       
-      <StockFetch ticker={this.state.stockName} startDate={this.state.startDate} endDate={this.state.endDate}/>
+      <StockFetch ticker={this.state.stockName} startDate={this.state.startDate} 
+      endDate={this.state.endDate} isSubmitted={this.state.isSubmitted}/>
       </>
 
     );
