@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
 import Histogram from 'react-chart-histogram';
 
+
 class StockFetch extends Component {
 
   state = {};
@@ -11,8 +12,22 @@ class StockFetch extends Component {
     this.state = {isLoading : true};
   }
 
+  componentDidUpdate(prevProps){
+    const apiStockURL = "https://api.tiingo.com/tiingo/daily/" + this.props.ticker + "/prices?startDate=" + this.props.startDate 
+    + "&endDate=" + this.props.endDate + "&&token=bc636b840068de7cefebde50762aa45fb89c7743";
+
+    fetch(apiStockURL)
+    .then((response) => response.json())
+    .then((data) => {
+      this.setState({data, isLoading : false});
+      console.log(data);
+    })
+    .catch((error) => console.log(error));
+  }
+
   componentDidMount(){
-    const apiStockURL = "https://api.tiingo.com/tiingo/daily/" + this.props.ticker + "/prices?startDate=2012-1-1&endDate=2013-1-1&&token=bc636b840068de7cefebde50762aa45fb89c7743";
+    const apiStockURL = "https://api.tiingo.com/tiingo/daily/" + this.props.ticker + "/prices?startDate=" + this.props.startDate 
+    + "&endDate=" + this.props.endDate + "&&token=bc636b840068de7cefebde50762aa45fb89c7743";
 
     fetch(apiStockURL)
     .then((response) => response.json())
@@ -33,11 +48,11 @@ class StockFetch extends Component {
           <div>
           <Text>Data gathering Successful.</Text>
           <View>
-            <Histogram 
+            <Histogram
               xLabels={this.state.data.map((item) => item.date.substr(0, 10))}
               yValues={this.state.data.map((item) => item.open)}
-              width='400'
-              height='200'
+              width='1000'
+              height='700'
               options={options}
             />
           </View>
@@ -47,14 +62,72 @@ class StockFetch extends Component {
   }
 }
 
+class StockForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      stockName: 'AAPL',
+      startDate: '2012-1-1',
+      endDate: '2013-1-1'
+    };
+  }
+
+  mySubmitHandler = (event) => {
+    event.preventDefault();
+  }
+
+  myChangeHandler = (event) => {
+    let nam = event.target.name;
+    let val = event.target.value;
+    this.setState({[nam]: val});
+  }
+
+  render() {
+    return (
+      <>
+      <div className="container">
+        <form onSubmit={this.mySubmitHandler}>
+        <h1>Hello</h1>
+        <p>Enter stock name:</p>
+        <input
+          type='text'
+          name='stockName'
+          onChange={this.myChangeHandler}
+        />
+        <p>Enter start date:</p>
+        <input
+          type='text'
+          name='startDate'
+          onChange={this.myChangeHandler}
+        />
+        <p>Enter end date:</p>
+        <input
+          type='text'
+          name='endDate'
+          onChange={this.myChangeHandler}
+        />
+        <br/>
+        <br/>
+        <input type='submit' />
+        </form>
+      </div>
+      
+      <StockFetch ticker={this.state.stockName} startDate={this.state.startDate} endDate={this.state.endDate}/>
+      </>
+
+    );
+  }
+}
+
 export default class App extends Component {
+
   render() {
     return (
       <View style={styles.container}>
         <Text>Welcome to StockCharts App.</Text>
         <React.Fragment>
           <View>
-            <StockFetch ticker='AAPL'/>
+            <StockForm/>
           </View>
         </React.Fragment>
         <StatusBar style="auto" />
@@ -62,6 +135,8 @@ export default class App extends Component {
     );
   }
 }
+
+
 
 const styles = StyleSheet.create({
   container: {
